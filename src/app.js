@@ -1,25 +1,29 @@
-const express = require("express");
+const express = require ("express");
 const app = express();
 
-const {adminAuth,userAuth} = require("./middleware/auth")
 
-app.use("/admin",adminAuth);
+app.use("/hello/add",(req,res)=>{
+    
+    res.send("hello world");
+    
+});
 
-app.use("/admin/add",(req,res)=>{
-    res.send("data added successfully");
-});
-app.use("/admin/delete",(req,res)=>{
-    res.send("data deleted successfully");
-});
-app.use("/admin/update",(req,res)=>{
-    res.send("data updated successfully")
+app.use("/hello",(req,res)=>{
+    try {
+        // throw new error("hajhddj")
+        res.send("this is 2nd route");
+    }catch(err){
+        res.send("error")
+    }
+    
+    
 })
 
-app.use("/user",userAuth);
 
-app.use("/user/add",(req,res)=>{
-    res.send("user added successfully")
+app.use('/',(err,req,res,next)=>{
+    res.status(500).send("something went wrong")
 })
+
 app.listen(3000,()=>{
-    console.log("app is running on port number 3000")
+    console.log("app is running in port 3000")
 })
