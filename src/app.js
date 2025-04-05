@@ -1,35 +1,25 @@
 const express = require("express");
 const app = express();
 
+const {adminAuth,userAuth} = require("./middleware/auth")
 
-app.use(
-"/user",
-(req,res,next)=>{
-    console.log("this is first routing");
-    next();
-    res.send("this 1st routing");
-    
-},
-(req,res,next)=>{
-    console.log("this is second routing");
-    next();
-    res.send("this is 2nd routing");
-    
-},
-(req,res,next)=>{
-    console.log("this is third route")
-    next()
-    res.send("this is 3rd routing")
-},
-(req,res,next)=>{
-    console.log("this is fourth routing");
-    next()
-    // res.send("this is 4th routing")
-}
-)
+app.use("/admin",adminAuth);
 
-app.listen(3000,()=>{
-    console.log("app listening on port number 3000")
+app.use("/admin/add",(req,res)=>{
+    res.send("data added successfully");
+});
+app.use("/admin/delete",(req,res)=>{
+    res.send("data deleted successfully");
+});
+app.use("/admin/update",(req,res)=>{
+    res.send("data updated successfully")
 })
 
+app.use("/user",userAuth);
 
+app.use("/user/add",(req,res)=>{
+    res.send("user added successfully")
+})
+app.listen(3000,()=>{
+    console.log("app is running on port number 3000")
+})
