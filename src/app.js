@@ -1,8 +1,28 @@
 const express = require("express")
-const connectDB = require("./config/database")
+const connect = require("./config/database")
+const User = require("./models/user")
 const app = express()
 
-connectDB()
+
+app.use(express.json());
+app.post("/signup",async(req,res) =>{
+    console.log(req.body)
+    const user = new User(req.body)
+   
+    try{
+        await user.save()
+        res.send("user data successfully added")
+        console.log("data entered successfully")
+    }
+    catch(err){
+        res.status(400).send("data not entered successfully")
+        console.log("Data not entered")
+    }
+   
+    
+})
+
+connect()
 .then( () =>{
     console.log("connection established successfully")
     app.listen(3000,()=>{

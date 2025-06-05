@@ -3,17 +3,17 @@ const UserSchema = new mongoose.Schema({
     firstName:{
         type:String,
     },
-    lastname:{
+    lastName:{
         type:String,
     },
     emailId:{
-        type:String
+        type:String,
     },
     phoneNumber:{
-        type:Number
+        type:Number,
     },
     password:{
-        type:String
+        type:String,
     }
 })
 module.exports = mongoose.model("User",UserSchema)
