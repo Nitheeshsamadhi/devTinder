@@ -1,12 +1,13 @@
 const express = require("express")
 const connectDB = require("./config/database")
 const User = require("./models/user")
+const { ReturnDocument } = require("mongodb")
 const app = express()
 
 app.use(express.json())
 
 
-
+//signup api
 app.post("/signup",async (req,res)=>{
     console.log(req.body)
      const user = new User(req.body)
@@ -27,6 +28,7 @@ app.post("/signup",async (req,res)=>{
     
 }) 
 
+//get user details by emailid
 app.get("/user",async(req,res)=>{
     const userEmail = req.body.emailId
     console.log(userEmail)
@@ -42,7 +44,7 @@ app.get("/user",async(req,res)=>{
         res.status(400).send("Something went wrong")
     }
 })
-
+//feed api to get all users details
 app.get("/feed", async (req,res)=>{
     const user = await User.find({})
     try{
@@ -52,14 +54,39 @@ app.get("/feed", async (req,res)=>{
     }
     
 })
-app.get("/oneuser",async(req,res)=>{
-    const userEmail = req.body.emailId
-    console.log(userEmail)
-    const user = await User.findOne({emailId:userEmail})
+//delete api by using user id
+app.delete("/user",async(req,res)=>{
     try{
-        res.send(user)
+    const userEmail = req.body.userId
+    console.log(userEmail)
+    const user = await User.findByIdAndDelete({_id:userEmail})
+    
+    if(!user){
+        res.send("user not found ")
+    }
+        res.json("user deleted successfully")
     }catch(error){
         res.send("no user found")
+    }
+})
+
+//patch api to update a field by using user id
+
+app.patch("/user",async(req,res) =>{
+    const userId = req.body.userId
+    const data = req.body
+    try{
+        
+        const user =await User.findByIdAndUpdate(userId,data,{ReturnDocument:"before"})
+        if(!user){
+            res.send("Invalid user id")
+        }else{
+            res.send(user)
+        }
+    }
+    
+    catch(error){
+        res.send("Something went wrong")
     }
 })
 
