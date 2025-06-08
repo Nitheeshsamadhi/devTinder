@@ -11,21 +11,14 @@ app.use(express.json())
 app.post("/signup",async (req,res)=>{
     console.log(req.body)
      const user = new User(req.body)
-    //     firstName:"Vikranth",
-    //     lastName:"yadav",
-    //     email:"vikrnath@gmail.com",
-    //     password:123454,
-
-    // })
     try{
         await user.save()
     res.send("user added successfully")
     console.log("data added successfully")
     }catch(error){
-        console.log("data not added")
-    }
-    
-    
+        console.log("data not added",error.message)
+        res.status(400).json({error:error.message})
+    } 
 }) 
 
 //get user details by emailid
@@ -77,7 +70,8 @@ app.patch("/user",async(req,res) =>{
     const data = req.body
     try{
         
-        const user =await User.findByIdAndUpdate(userId,data,{ReturnDocument:"before"})
+        const user =await User.findByIdAndUpdate(userId,data,{ReturnDocument:"before"},
+            {runValidators:true})
         if(!user){
             res.send("Invalid user id")
         }else{
