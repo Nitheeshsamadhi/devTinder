@@ -9,6 +9,34 @@ const bcrypt = require("bcrypt")
 app.use(express.json())
 
 
+app.post("/login",async(req,res)=>{
+    const {email,password} = req.body
+    
+    try{
+        const user =await User.findOne({emailId:email})
+        
+        
+        if(!user){
+            throw new Error("invalid crediential ")
+        }
+       
+            const validPassword = await bcrypt.compare(password,user.password)
+            
+            if(validPassword){
+                res.send("user login successfully")
+            }else{
+                throw new Error("invalid credentials")
+            }
+        
+    }
+    catch(err){
+        res.status(400).send("Error: " +err.message)
+    }
+    
+})
+
+
+
 //signup api
 app.post("/signup",async (req,res)=>{
     console.log(req.body)
