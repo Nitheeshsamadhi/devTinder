@@ -65,13 +65,21 @@ app.delete("/user",async(req,res)=>{
 
 //patch api to update a field by using user id
 
-app.patch("/user",async(req,res) =>{
-    const userId = req.body.userId
+app.patch("/user/:userId",async(req,res) =>{
+    const userId = req.params?.userId;
     const data = req.body
     try{
+        const allowed_updates = ["firstName","lastname","password","gender","age"]
+
+        const isupdates_allowed = Object.keys(data).every((k)=>
+        allowed_updates.includes(k)
+        );
+        if(!isupdates_allowed){
+            throw new Error("update not allowed"+error.message)
+        }
         
-        const user =await User.findByIdAndUpdate(userId,data,{ReturnDocument:"before"},
-            {runValidators:true})
+        const user =await User.findByIdAndUpdate(userId,data,{new:true,runValidators:true},
+            )
         if(!user){
             res.send("Invalid user id")
         }else{
@@ -80,7 +88,7 @@ app.patch("/user",async(req,res) =>{
     }
     
     catch(error){
-        res.send("Something went wrong")
+        res.status(400).send("Something went wrong "+error.message)
     }
 })
 
