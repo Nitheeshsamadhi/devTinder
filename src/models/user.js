@@ -52,7 +52,21 @@ const UserSchema = new mongoose.Schema({
         unique:true,
         min:10,
         
+    },
+    about:{
+        type:String,
+        default:"this is devtinder for developers"
+    },
+    photoURL:{
+        type:String,
+        default:"https://media.licdn.com/dms/image/v2/D5603AQGGRhuBVWABHg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1716196446849?e=2147483647&v=beta&t=c17ZWTvv2xdLzO0qcLRaFm6lR48gNL3_ZO8qqlEFssQ",
+        validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("this is not a valid url")
+            }
+        }   
     }
+
 
 },
 {

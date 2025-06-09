@@ -3,6 +3,8 @@ const connectDB = require("./config/database")
 const User = require("./models/user")
 const { ReturnDocument } = require("mongodb")
 const app = express()
+const {validationSignupData} = require("./utils/validations")
+const bcrypt = require("bcrypt")
 
 app.use(express.json())
 
@@ -10,8 +12,26 @@ app.use(express.json())
 //signup api
 app.post("/signup",async (req,res)=>{
     console.log(req.body)
-     const user = new User(req.body)
+   
+    
     try{
+        //singup data validation
+        validationSignupData(req);
+
+        const {firstName,lastname,emailId,phoneNumber,gender,about,photoURL,password} = req.body
+    
+        const hashedPassword = await bcrypt.hash(password,10)
+        const user = new User({
+            firstName,
+            lastname,
+            emailId,
+            phoneNumber,
+            gender,
+            about,
+            photoURL,
+            password:hashedPassword
+         })
+        
         await user.save()
     res.send("user added successfully")
     console.log("data added successfully")
@@ -34,7 +54,7 @@ app.get("/user",async(req,res)=>{
         }
         
     }catch(error){
-        res.status(400).send("Something went wrong")
+        res.status(400).send("Something went wrong: "+error.message)
     }
 })
 //feed api to get all users details
@@ -43,7 +63,7 @@ app.get("/feed", async (req,res)=>{
     try{
         res.send(user)
     }catch (error){
-        res.status(400).send("something went wrong")
+        res.status(400).send("something went wrong: "+error.message)
     }
     
 })
@@ -101,7 +121,7 @@ connectDB()
 }
 )
 .catch((err) =>{
-    console.error("connetion failed")
+    console.error("connetion failed: "+err.message)
 }
 )
 
