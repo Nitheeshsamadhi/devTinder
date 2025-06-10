@@ -1,30 +1,27 @@
+const jwt = require("jsonwebtoken")
+const User = require("../models/user")
 
 
-const adminAuth = (req,res,next)=>{
-    const valid = "xyz";
-    const validation = valid === "xyz";
-    if(!validation){
-        res.send("invalid credentials")
-    }
-    else{
+const userAuth = async(req,res,next)=>{
+    try{
+        const {token} = req.cookies
+        if(!token){
+            res.send("invalid token")
+        }
+        const decodedToken = await jwt.verify(token,"NitheeshDev$90")
+        const {_id} = decodedToken
+        const user = await User.findById(_id)
+        if(!user){
+            throw new Error("user not found")
+        }
+        res.user = user
         next()
-    }
-    
-    
-};
-const userAuth = (req,res,next)=>{
-    const token = "user";
-    const istoken = token === "use";
-    if(!istoken){
-        res.status(401).send("user details are invalid")
-    }else{
-        next()
-    }
-    
-}
 
-module.exports = {
-    adminAuth,
-    userAuth,
+    }
+    catch(err){
+        res.status(400).send("Error: "+err.message)
+    }
 }
-    
+module.exports={
+    userAuth
+}
