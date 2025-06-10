@@ -1,12 +1,16 @@
 const express = require("express")
 const connectDB = require("./config/database")
 const User = require("./models/user")
-const { ReturnDocument } = require("mongodb")
 const app = express()
 const {validationSignupData} = require("./utils/validations")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
+const cookieParser = require("cookie-parser")
+const user = require("./models/user")
+const { ProfilingLevel } = require("mongodb")
 
 app.use(express.json())
+app.use(cookieParser())
 
 
 app.post("/login",async(req,res)=>{
@@ -23,6 +27,11 @@ app.post("/login",async(req,res)=>{
             const validPassword = await bcrypt.compare(password,user.password)
             
             if(validPassword){
+            //creating token
+            const token =await jwt.sign({_id:user._id},"NitheeshDev$90")
+
+            //Inserting token into cookie
+            res.cookie("token",token)
                 res.send("user login successfully")
             }else{
                 throw new Error("invalid credentials")
@@ -85,6 +94,8 @@ app.get("/user",async(req,res)=>{
         res.status(400).send("Something went wrong: "+error.message)
     }
 })
+
+
 //feed api to get all users details
 app.get("/feed", async (req,res)=>{
     const user = await User.find({})
@@ -95,6 +106,8 @@ app.get("/feed", async (req,res)=>{
     }
     
 })
+
+
 //delete api by using user id
 app.delete("/user",async(req,res)=>{
     try{
@@ -111,8 +124,8 @@ app.delete("/user",async(req,res)=>{
     }
 })
 
-//patch api to update a field by using user id
 
+//patch api to update a field by using user id
 app.patch("/user/:userId",async(req,res) =>{
     const userId = req.params?.userId;
     const data = req.body
@@ -138,6 +151,36 @@ app.patch("/user/:userId",async(req,res) =>{
     catch(error){
         res.status(400).send("Something went wrong "+error.message)
     }
+})
+
+// get user profile
+app.get("/userprofile",async(req,res)=>{
+    try{
+        //receving cooking from req
+        const cookies = req.cookies;
+        
+        const {token} = cookies;
+        if(!token){
+            throw new Error("token expired please login")
+        }
+        //validating token
+        const decodedToken =await jwt.verify(token,"NitheeshDev$90")
+        
+        
+        if(decodedToken){
+            const {_id} = decodedToken;
+            //getting profile details by using the id which is hided in token
+            const profile =await User.findById(_id)
+            res.send(profile)
+        }else{
+            res.send("token expired please login")
+        }
+        
+    }
+    catch(err){
+        res.status(400).send("error: "+err.message)
+    }
+    
 })
 
 connectDB()
