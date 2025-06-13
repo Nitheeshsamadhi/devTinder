@@ -47,7 +47,6 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth, async(req,res)=>{
         res.send(user.firstName+" send connection request to "+ toUser.firstName)
         
             
-        
 
     }
     catch(err){
