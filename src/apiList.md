@@ -11,8 +11,8 @@
 - patch/profile/password
 
 ## connectRequestRouter
-- post/request/send/interested/userId
-- post/request/send/ignore/userId
+- post/request/send/:status(interested/ignore)/:userId
+
 - post/request/review/accept/userId
 - post/request/review/reject/userId
 

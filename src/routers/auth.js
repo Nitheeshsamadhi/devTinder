@@ -30,7 +30,7 @@ const User = require("../models/user")
             
             await user.save()
         res.send("user added successfully")
-        console.log("data added successfully")
+        console.log("user added successfully")
         }catch(error){
             console.log("data not added",error.message)
             res.status(400).json({error:error.message})

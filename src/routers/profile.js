@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt")
 profileRouter.get("/profile/view",userAuth, async (req,res)=>{
     try{
       
-       const user = res.user
+       const user = req.user
             res.send(user)
     }
     catch(err){
@@ -19,7 +19,7 @@ profileRouter.get("/profile/view",userAuth, async (req,res)=>{
 //profile edit
 profileRouter.patch("/profile/edit",userAuth, async (req,res)=>{
     try{
-        const user = res.user
+        const user = req.user
         validateProfileEditData(req)
         if(!validateProfileEditData){
             throw new Error("can`t update data")
@@ -42,7 +42,7 @@ profileRouter.patch("/profile/edit",userAuth, async (req,res)=>{
 
 profileRouter.post("/profile/password",userAuth,async(req,res)=>{
     try{
-        const user = res.user;
+        const user = req.user;
         const {oldPassword,newPassword} = req.body;
         const isvalid =await bcrypt.compare(oldPassword,user.password)
         if(!isvalid){
